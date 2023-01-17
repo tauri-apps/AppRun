@@ -101,7 +101,15 @@ char** apprun_set_original_workdir_env(char* const* envp) {
 }
 
 void apprun_restore_workdir_if_needed() {
-    char const* workdir = getenv(APPRUN_ENV_ORIGINAL_WORKDIR);
+    char workdir[1024];
+    char const* appdir = getenv("APPDIR");
+    if (appdir != NULL) {
+        char const* usr = "/usr";
+        strcpy(workdir, appdir);
+        strcat(workdir, usr);
+    } else {
+        strcpy(workdir, getenv(APPRUN_ENV_ORIGINAL_WORKDIR));
+    }
     if (workdir != NULL) {
 #ifdef DEBUG
         fprintf(stderr, "APPRUN_HOOK_DEBUG: restoring original workdir %s\n", workdir);
